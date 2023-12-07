@@ -1,4 +1,5 @@
 import re
+from itertools import chain
 
 txt = """seeds: 79 14 55 13
 
@@ -54,8 +55,12 @@ seed_list_pt2 = re.findall(r'\d+ \d+', seeds[0])
 seeds = [int(seed) for seed in seed_list]
 seeds_pt2 = [seed.split() for seed in seed_list_pt2]
 
-all_seeds_pt2 = [range(int(seed[0]),int(seed[1])) for seed in seeds_pt2]
+all_seeds_pt2 = list()
+for group in [list(range(int(seed[0]),int(seed[0]) + int(seed[1]))) for seed in seeds_pt2]:
+  all_seeds_pt2.extend(group)
 
+
+## Part 1
 
 soil = [lookup(s, maps[0]) for index, s in enumerate(seeds)]
 fert = [lookup(s, maps[1]) for index, s in enumerate(soil)]
@@ -67,14 +72,16 @@ loc = [lookup(s, maps[6]) for index, s in enumerate(humi)]
     
 print(f"Part 1: {min(loc)}")
 
+## Part 2
 
 
-
-#seed_soil = remap(mapping_list[1][1:])
-#soil_fert = remap(mapping_list[2][1:])
-#fert_water = remap(mapping_list[3][1:])
-#water_light = remap(mapping_list[4][1:])
-#light_temp = remap(mapping_list[5][1:])
-#temp_humi = remap(mapping_list[6][1:])
-#humi_loc = remap(mapping_list[7][1:])
+soil = [lookup(s, maps[0]) for index, s in enumerate(all_seeds_pt2)]
+fert = [lookup(s, maps[1]) for index, s in enumerate(soil)]
+water = [lookup(s, maps[2]) for index, s in enumerate(fert)]
+light = [lookup(s, maps[3]) for index, s in enumerate(water)]
+temp = [lookup(s, maps[4]) for index, s in enumerate(light)]
+humi = [lookup(s, maps[5]) for index, s in enumerate(temp)]
+loc = [lookup(s, maps[6]) for index, s in enumerate(humi)]
+    
+print(f"Part 2: {min(loc)}")
 
