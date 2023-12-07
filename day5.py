@@ -1,6 +1,4 @@
 import re
-from icecream import ic
-import numpy as np
 
 txt = """seeds: 79 14 55 13
 
@@ -39,41 +37,44 @@ humidity-to-location map:
 with open('day5.txt','r') as f:
   txt = f.read()
 
-mapping_list = [group.split('\n') for group in txt.split('\n\n')]
 
-seed_list = re.findall(r'\d+', mapping_list[0][0])
+def lookup(value, mapping):
+  _, *ranges = mapping
+  for r in ranges:
+    dest, src, n = map(int, r.split())
+    if src <= value < src + n:
+      return (value - src) + dest
+  return value
+
+seeds, *maps = [group.split('\n') for group in txt.split('\n\n')]
+
+seed_list = re.findall(r'\d+', seeds[0])
+seed_list_pt2 = re.findall(r'\d+ \d+', seeds[0])
+
 seeds = [int(seed) for seed in seed_list]
+seeds_pt2 = [seed.split() for seed in seed_list_pt2]
 
-def remap(map_list):
-  mapper = list(range(1000000000))
-
-  for line in map_list:
-    maps = line.split()
-
-    for n in range(int(maps[2])):
-      mapper[int(maps[1]) + n] = int(maps[0]) + n
-
-  return mapper
+all_seeds_pt2 = [range(int(seed[0]),int(seed[1])) for seed in seeds_pt2]
 
 
-seed_soil = remap(mapping_list[1][1:])
-soil_fert = remap(mapping_list[2][1:])
-fert_water = remap(mapping_list[3][1:])
-water_light = remap(mapping_list[4][1:])
-light_temp = remap(mapping_list[5][1:])
-temp_humi = remap(mapping_list[6][1:])
-humi_loc = remap(mapping_list[7][1:])
+soil = [lookup(s, maps[0]) for index, s in enumerate(seeds)]
+fert = [lookup(s, maps[1]) for index, s in enumerate(soil)]
+water = [lookup(s, maps[2]) for index, s in enumerate(fert)]
+light = [lookup(s, maps[3]) for index, s in enumerate(water)]
+temp = [lookup(s, maps[4]) for index, s in enumerate(light)]
+humi = [lookup(s, maps[5]) for index, s in enumerate(temp)]
+loc = [lookup(s, maps[6]) for index, s in enumerate(humi)]
+    
+print(f"Part 1: {min(loc)}")
 
-locs = list()
 
-for x in seeds:
-  soil = seed_soil(x)
-  fert = ic(soil_fert(soil))
-  water = fert_water(fert)
-  light = water_light(water)
-  temp = light_temp(light)
-  humi = temp_humi(temp)
-  loc = humi_loc(humi)
-  ic(loc)
 
-print(min(locs))
+
+#seed_soil = remap(mapping_list[1][1:])
+#soil_fert = remap(mapping_list[2][1:])
+#fert_water = remap(mapping_list[3][1:])
+#water_light = remap(mapping_list[4][1:])
+#light_temp = remap(mapping_list[5][1:])
+#temp_humi = remap(mapping_list[6][1:])
+#humi_loc = remap(mapping_list[7][1:])
+

@@ -1,6 +1,5 @@
 import re
 
-
 sample_data = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
 Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
 Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
@@ -14,35 +13,45 @@ with open('day4.txt', 'r') as f:
 scores = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 score = 0
 
-data = re.split(r'\n',live_data)
+data = re.split(r'\n', live_data)
+
+cards = [1] * len(data)
+wins = [0] * len(data)
 
 # parse the data
 
-for card in data:
-  card_parsed = re.split(r'[:\|]', card)
-
-  ## card number
+for card_num in range(len(data)):
+  print(f"Card Number {card_num}")
+  for _ in range(cards[card_num]):
+    card_parsed = re.split(r'[:\|]', data[card_num])
   
+    ## card number
   
-  ## numbers
-  try:
-    card_numbers = re.findall('\d+', card_parsed[1])
-  except IndexError:
-    continue
+    
+    ## numbers
+    try:
+      card_numbers = re.findall('\d+', card_parsed[1])
+    except IndexError:
+      continue
+    
+    ## winners
+    card_winners = re.findall('\d+', card_parsed[2])
+    
+    # calculate the score
+    card_score = 1
+    winners = 0
   
-  ## winners
-  card_winners = re.findall('\d+', card_parsed[2])
+       
+    for number in card_numbers:
+      if number in card_winners:
+        winners += 1
   
-  # calculate the score
-  card_score = 1
-  index = 0
-
-  for number in card_numbers:
-    if number in card_winners:
-      index += 1
-
-  score += scores[index]
-
-print(score)
-
+    for number in range(winners):
+      cards[card_num + number + 1] += 1 
+      
+    wins[card_num] = winners
+    
+    score += index
+  
+print(sum(cards))
   
